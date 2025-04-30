@@ -18,13 +18,13 @@ async function cleanHtmlFile(inputPath, outputPath, options) {
   try {
     // Read the input file
     const input = await fs.readFile(inputPath, 'utf8');
-    
+
     // Clean the HTML
     const output = await cleanHtml(input, options);
-    
+
     // Write the cleaned HTML to the output file
     await fs.writeFile(outputPath, output, 'utf8');
-    
+
     return {
       success: true,
       inputPath,

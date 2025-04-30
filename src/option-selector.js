@@ -1,4 +1,4 @@
-const { checkbox, input, confirm, select } = require('@inquirer/prompts');
+const { checkbox, input, confirm } = require('@inquirer/prompts');
 
 const OPTION_DEFINITIONS = {
   'allow-attributes-without-values': {
@@ -115,11 +115,11 @@ async function selectOptions(preselectedOptions = null) {
   }
 
   const options = {};
-  
+
   // Configure each selected option
   for (const key of selectedOptionKeys) {
     const definition = OPTION_DEFINITIONS[key];
-    
+
     if (definition.type === 'boolean') {
       options[key] = await confirm({
         message: `Enable ${key}?`,
@@ -142,19 +142,19 @@ async function selectOptions(preselectedOptions = null) {
       });
     } else if (definition.type === 'array' && definition.configurable) {
       const defaultStr = definition.default ? definition.default.join(', ') : '';
-      
+
       const arrayInput = await input({
         message: `Enter comma-separated values for ${key}:`,
         default: defaultStr
       });
-      
+
       options[key] = arrayInput
         .split(',')
         .map(item => item.trim())
         .filter(item => item.length > 0);
     }
   }
-  
+
   return options;
 }
 
