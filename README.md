@@ -2,8 +2,7 @@
 
 ✨ A CLI application for cleaning and formatting HTML files
 
-![Test Suite](https://github.com/yourusername/clean-html-cli/actions/workflows/test.yml/badge.svg)
-![Lint](https://github.com/yourusername/clean-html-cli/actions/workflows/lint.yml/badge.svg)
+![Test Suite](https://github.com/richardgaunt/html-clean-cli/actions/workflows/test.yml/badge.svg)
 
 ## Overview
 
