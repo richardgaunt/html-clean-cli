@@ -6,7 +6,8 @@
 
 ## Overview
 
-HTML Cleaner is an interactive CLI tool that wraps the functionality of the [clean-html](https://www.npmjs.com/package/clean-html) package with a user-friendly interface. It allows you to clean and format HTML files with customizable options.
+HTML Cleaner is an interactive CLI tool that wraps the functionality of the [clean-html](https://www.npmjs.com/package/clean-html) package with a user-friendly interface. 
+It allows you to clean and format HTML files with customizable options.
 
 ## Features
 
@@ -20,7 +21,7 @@ HTML Cleaner is an interactive CLI tool that wraps the functionality of the [cle
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/clean-html-cli.git
+git clone https://github.com/richardgaunt/clean-html-cli.git
 cd clean-html-cli
 
 # Install dependencies
@@ -58,7 +59,7 @@ npm test
 
 ## Clean HTML Options
 
-The application supports all options from the `clean-html` package:
+The application supports options from the `clean-html` package - see the [full list of the tool](https://github.com/dave-kennedy/clean-html)
 
 ### Core Options
 
@@ -93,4 +94,4 @@ const options = {
 };
 ```
 
-For detailed information about each option, please refer to the [clean-html documentation](https://www.npmjs.com/package/clean-html).
+For detailed information about each option, please refer to the [clean-html documentation](https://github.com/dave-kennedy/clean-html).
