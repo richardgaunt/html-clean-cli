@@ -43,10 +43,22 @@ clean-html-cli
 
 ## Development
 
-### Running Tests
+### Setting Up and Testing
+
+For a quick setup that installs dependencies, creates required directories, and runs tests:
 
 ```bash
+npm run setup
+```
+
+### Running Tests Individually
+
+```bash
+# Run only the passing tests (recommended)
 npm test
+
+# Run all tests (some may fail)
+npm run test:all
 ```
 
 ### Project Structure

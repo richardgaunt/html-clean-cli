@@ -8,5 +8,11 @@ export default {
   transform: {},
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1'
-  }
+  },
+  transformIgnorePatterns: ['/node_modules/'],
+  testTimeout: 10000,
+  verbose: true,
+  forceExit: true,
+  detectOpenHandles: true,
+  bail: false
 };

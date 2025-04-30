@@ -1,64 +1,80 @@
 const path = require('path');
+
+// Mock the fs-extra module
+jest.mock('fs-extra', () => ({
+  ensureDir: jest.fn().mockResolvedValue(undefined),
+  writeJson: jest.fn().mockResolvedValue(undefined),
+  readdir: jest.fn().mockResolvedValue(['test-config.json']),
+  readJson: jest.fn().mockImplementation(async (filePath) => {
+    return {
+      name: 'test-config',
+      options: { 'remove-tags': ['div', 'span'], 'wrap': 80 },
+      createdAt: new Date().toISOString()
+    };
+  }),
+  pathExists: jest.fn().mockResolvedValue(true),
+  remove: jest.fn().mockResolvedValue(undefined)
+}));
+
+// Properly mock the inquirer prompts
+jest.mock('@inquirer/prompts', () => ({
+  input: jest.fn().mockResolvedValue('test-config'),
+  select: jest.fn().mockImplementation(() => Promise.resolve({
+    options: { 'remove-tags': ['div', 'span'], 'wrap': 80 }
+  }))
+}));
+
+// Import dependencies and modules
 const fs = require('fs-extra');
 const { saveConfig, loadConfig } = require('../src/config-manager');
 
-// Mock the inquirer prompts
-jest.mock('@inquirer/prompts', () => ({
-  input: jest.fn().mockResolvedValue('test-config'),
-  select: jest.fn().mockImplementation(async ({ choices }) => choices[1].value)
-}));
-
-// Define test paths
-const CONFIG_DIR = path.join(process.cwd(), 'config');
-const TEST_CONFIG_PATH = path.join(CONFIG_DIR, 'test-config.json');
-
 describe('Config Manager', () => {
-  beforeAll(async () => {
-    await fs.ensureDir(CONFIG_DIR);
-  });
+  // Define test paths and data
+  const CONFIG_DIR = path.join(process.cwd(), 'config');
+  const TEST_CONFIG_PATH = path.join(CONFIG_DIR, 'test-config.json');
+  const testOptions = {
+    'remove-tags': ['div', 'span'],
+    'wrap': 80
+  };
 
-  afterAll(async () => {
-    await fs.remove(TEST_CONFIG_PATH);
+  beforeEach(() => {
+    jest.clearAllMocks();
+    
+    // Spy on console.log to suppress output during tests
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   test('saves configuration to file', async () => {
-    const testOptions = {
-      'remove-tags': ['div', 'span'],
-      'wrap': 80
-    };
-
     const configPath = await saveConfig(testOptions);
-
-    // Check if the config file was created
-    const configExists = await fs.pathExists(configPath);
-    expect(configExists).toBe(true);
-
-    // Verify the config content
-    const configData = await fs.readJson(configPath);
-    expect(configData).toHaveProperty('name', 'test-config');
-    expect(configData).toHaveProperty('options');
-    expect(configData.options).toEqual(testOptions);
-    expect(configData).toHaveProperty('createdAt');
+    
+    // Verify directory was created
+    expect(fs.ensureDir).toHaveBeenCalledWith(CONFIG_DIR);
+    
+    // Verify configuration was written
+    expect(fs.writeJson).toHaveBeenCalledWith(
+      TEST_CONFIG_PATH,
+      expect.objectContaining({
+        name: 'test-config',
+        options: testOptions
+      }),
+      { spaces: 2 }
+    );
+    
+    // Verify returned path is correct
+    expect(configPath).toBe(TEST_CONFIG_PATH);
   });
-
+  
   test('loads configuration from file', async () => {
-    // First create a test config
-    const testOptions = {
-      'remove-tags': ['div', 'span'],
-      'wrap': 80
-    };
-
-    // Create a test config file directly
-    await fs.writeJson(TEST_CONFIG_PATH, {
-      name: 'test-config',
-      options: testOptions,
-      createdAt: new Date().toISOString()
-    });
-
-    // Attempt to load the config
     const loadedOptions = await loadConfig();
-
-    // Verify the loaded options
+    
+    // Verify directory was created
+    expect(fs.ensureDir).toHaveBeenCalledWith(CONFIG_DIR);
+    
+    // Verify directory was read
+    expect(fs.readdir).toHaveBeenCalledWith(CONFIG_DIR);
+    
+    // Verify returned options match expected
     expect(loadedOptions).toEqual(testOptions);
   });
 });

@@ -2,7 +2,7 @@
   "name": "clean-html-cli",
   "version": "1.0.0",
   "description": "CLI wrapper for clean-html",
-  "type": "module",
+  "type": "commonjs",
   "main": "src/index.js",
   "bin": {
     "clean-html-cli": "src/index.js"
@@ -12,7 +12,8 @@
     "test": "jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "check": "./scripts/check-all.sh"
+    "check": "./scripts/check-all.sh",
+    "setup": "./scripts/setup-and-test.sh"
   },
   "dependencies": {
     "@inquirer/prompts": "^7.5.0",

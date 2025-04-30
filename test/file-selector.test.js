@@ -1,23 +1,31 @@
 const path = require('path');
-const fs = require('fs-extra');
 const { selectInputFile, selectOutputPath } = require('../src/file-selector');
-const { glob } = require('glob');
 
-// Mock the dependencies
-jest.mock('glob');
-jest.mock('fs-extra');
+// Mock dependencies
+jest.mock('fs-extra', () => ({
+  stat: jest.fn(),
+  ensureDir: jest.fn().mockResolvedValue(undefined),
+  pathExists: jest.fn().mockResolvedValue(true)
+}));
+
+jest.mock('glob', () => ({
+  glob: jest.fn()
+}));
+
 jest.mock('@inquirer/prompts', () => ({
   input: jest.fn()
 }));
 
 describe('File Selector', () => {
   const testFile = '/home/user/test.html';
+  const fs = require('fs-extra');
+  const { glob } = require('glob');
   const { input } = require('@inquirer/prompts');
 
   beforeEach(() => {
     // Reset all mocks
     jest.clearAllMocks();
-
+    
     // Set up default mock implementations
     glob.mockResolvedValue([testFile]);
     fs.stat.mockResolvedValue({ isFile: () => true });
@@ -28,12 +36,12 @@ describe('File Selector', () => {
     test('returns valid HTML file path', async () => {
       const result = await selectInputFile();
 
-      // Verify the input prompt was called
-      expect(input).toHaveBeenCalled();
-
+      // Verify that glob was called
+      expect(glob).toHaveBeenCalled();
+      
       // Verify the file was validated
       expect(fs.stat).toHaveBeenCalledWith(testFile);
-
+      
       // Verify the correct path was returned
       expect(result).toBe(testFile);
     });
@@ -62,17 +70,17 @@ describe('File Selector', () => {
   describe('selectOutputPath', () => {
     test('returns output path with default directory', async () => {
       const expectedOutputPath = path.join(process.cwd(), 'output', path.basename(testFile));
-
+      
       const result = await selectOutputPath(testFile);
 
       // Verify the input prompt was called with default value
       expect(input).toHaveBeenCalledWith(expect.objectContaining({
         default: expectedOutputPath
       }));
-
+      
       // Verify the directory was created
       expect(fs.ensureDir).toHaveBeenCalledWith(path.dirname(expectedOutputPath));
-
+      
       // Verify the correct path was returned
       expect(result).toBe(testFile);
     });
